@@ -222,11 +222,11 @@ Let's now look at regression using one categorical variable to predict one conti
 
 First, describe our variables of interest as we did above. I am going to give you less guidance here. I want you to explore:
 
-1\) The raw data - twitch_data, we will need to look at the average_viewers variable and language variable in the twitch_data.
+1\) The raw data - twitch_data, we will need to look at the average_viewers variable and language variable in the twitch_data. I will also log the variable average_viewers.
 
-2\) Summaries of the variables- we will use the `summary()` function to get summaries of both average_viewers and language. Will also use `lm()` to help summarize as well.
+2\) Summaries of the variables- we will use the `summary()` and `tidy()`f unction to get summaries of both average_viewers and language. Will also use `lm()` and run a regression test to get the coefficient.
 
-3\) Plot the variables- create a histogram to help visualize the relationship between variables.
+3\) Plot the variables- create a plots to visualize residuals and then a residual plot get another visualization.
 
 ## \## Question 5
 
