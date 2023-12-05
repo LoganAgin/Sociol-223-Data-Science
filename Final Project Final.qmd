@@ -1,0 +1,334 @@
+---
+title: "Final Project Final"
+author: "Logan Agin"
+format: html
+editor: visual
+embed-resources: true
+echo: false 
+---
+
+# Likes and Dislikes effecting Views in YouTube videos?
+
+Logan Agin
+
+```{r}
+#| message: false
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(moderndive)
+library(patchwork)
+theme_set(theme_minimal())
+US <- read_csv("USvideos.csv")
+
+```
+
+```{r}
+library(here)
+library(moderndive)
+
+US <-  US %>% 
+  mutate(likes = ifelse(likes == 0, likes + 1, likes),
+         dislikes = ifelse(dislikes == 0, dislikes + 1, dislikes)) %>% 
+  mutate(log_views = log(views)) %>% 
+  mutate(log_likes = log(likes), log_dislikes = log(dislikes))
+
+US_rep_sample <- US %>% 
+  rep_sample_n(size = 1000, reps = 50)
+
+US_sample_views <- US_rep_sample %>% 
+  group_by(replicate) %>% 
+  summarize(log_views = log_views)
+```
+
+## Introduction 
+
+YouTube is a massive website where people can upload videos for others to watch. The YouTube algorithm takes multiple variables into deciding what YouTube video trends. If a video trends then the more views the video gets. I want to focus on likes and dislikes to see its relationships with views. I looked either likes or dislikes effects total views more. For this study, I looked at multiple videos posted between 2017 and 2018 that trended.
+
+YouTube channels make money off of their videos. AD revenue, length of video and total views all effect the income of the channel's video. This inspires creators to make videos will get them the most amount of views. Many different types of creators have made different types of videos to get the highest amount of views as possible. I want to see if the YouTube algorithm is effected more if people either like or dislikes the video. In other words, does likes or dislikes create more views.
+
+Unfortunately, this data set does not have videos after the year 2018. YouTube has since revamped their brand and advocated for more family friendlya content. Some of the videos have either been demonetized or banned since the data was created. The dislikes button is no longer on the site as well. So for current videos this study might be outdated.
+
+Following is a 10 random samples from our data set.
+
+```{r}
+random_sample <- US %>% 
+  sample_n(10) %>% 
+  select(trending_date,channel_title,views,likes,dislikes)
+random_sample
+```
+
+## Exploratory data analysis 
+
+In the data we had 50000 samples with 19 variables. The variables I will focus on is views, likes and dislikes. Many of the videos had zero likes or zero dislikes. Zero videos had zero views. The data is very skewed. Many videos outperformed others drastically. For example there are trending videos with 549 views, 9 likes and 1 dislike compared to a video with 22,521,923 views, 5,023,450 likes and 343,541 dislikes. So to combat this I logged all three variables I tested. For the videos that have zero likes or dislikes I added 1 to prevent negative infinities.
+
+```{r}
+random_sample2 <- US %>% 
+  sample_n(10) %>% 
+  select(video_id,views,likes,dislikes,log_views,log_likes,log_dislikes)
+random_sample2
+```
+
+I then looked at the distribution of my log views, log likes and log dislikes.
+
+```{r}
+library(here)
+library(moderndive)
+set.seed(33)
+
+US <-  US %>% 
+  mutate(likes = ifelse(likes == 0, likes + 1, likes),
+         dislikes = ifelse(dislikes == 0, dislikes + 1, dislikes)) %>% 
+  mutate(log_views = log(views)) %>% 
+  mutate(log_likes = log(likes), log_dislikes = log(dislikes))
+
+US_rep_sample <- US %>% 
+  rep_sample_n(size = 1000, reps = 50)
+
+US_sample_views <- US_rep_sample %>% 
+  group_by(replicate) %>% 
+  summarize(log_views = log_views)
+
+ggplot(US_sample_views,
+       aes(x = log_views))+ 
+  geom_histogram() + 
+  theme_minimal() + 
+  labs(title = "Random Sample of US YouTube Videos",
+       x = "Views per Video")
+
+```
+
+```{r}
+set.seed(33)
+US_sample_likes <- US_rep_sample %>% 
+  group_by(replicate) %>% 
+  summarize(log_likes = log_likes)
+
+ggplot(US_sample_likes,
+       aes(x = log_likes))+ 
+  geom_histogram() + 
+  theme_minimal() + 
+  labs(title = "Random Sample of US YouTube Videos",
+       x = "Likes per Video")
+```
+
+```{r}
+set.seed(33)
+US_sample_dislikes <- US_rep_sample %>% 
+  group_by(replicate) %>% 
+  summarize(log_dislikes = log_dislikes)
+
+ggplot(US_sample_dislikes,
+       aes(x = log_dislikes))+ 
+  geom_histogram() + 
+  theme_minimal() + 
+  labs(title = "Random Sample of US YouTube Videos",
+       x = "Dislikes per Video")
+```
+
+All three distributions look normal. Likes and dislikes did have a little skew to the left due to the amount of videos with low likes and dislikes.
+
+I then created scatter plots to look at the relationships between our numerical variables, likes and dislikes, and our outcome variable, views. This is to see the overall relationship between likes and views, and dislikes and views. In both figures, as our outcome variable, views, increase our numerical variable has a positive correlation.
+
+```{r}
+ggplot(US, aes(x = log_likes, y = log_views)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") + 
+  labs(title = "Scatter Plot of Likes vs. Views with Regression Line",
+       x = "Views",
+       y = "Likes",
+        subtitle = "1 = 100,000") + 
+  theme_minimal()
+```
+
+```{r}
+ggplot(US, aes(x = log_dislikes, y = log_views)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") + 
+  labs(title = "Scatter Plot of Dislikes vs. Views with Regression Line",
+       x = "Views",
+       y = "Dislikes") + 
+  theme_minimal()
+```
+
+I then wanted to make correlation easy to read so I visualized the correlation of all variables. I want to focus on the correlation of views to likes and views to dislikes. For views to likes we see a .85 positive correlation. For views to dislikes we see a .47 positive correlation.
+
+```{r}
+library(psych)
+library(ggcorrplot)
+cor_data <- US[c("views", "likes", "dislikes")]
+
+cor <- cor(cor_data)
+
+print(cor)
+
+ggcorrplot(cor,
+           method = "circle",
+           lab = TRUE)
+```
+
+## Linear Regression 
+
+### Methods 
+
+I created two separate linear regression models using our outcome variable and two separate numerical variables.
+
+Outcome variable y = Logged Views
+
+Numerical variables x = Likes or Dislikes
+
+### Model Results 
+
+The table that follows shows us the regression table of views to likes and views to dislikes.
+
+```{r}
+reg_likes <- lm(log_views ~ log_likes,
+          data = US)
+get_regression_table(reg_likes)
+
+reg_dislikes <- lm(log_views ~ log_dislikes,
+                   data = US)
+get_regression_table(reg_dislikes)
+```
+
+### Interpreting the regression table 
+
+The regression equations for views is as follows:
+
+Views = 6.73 + .69(likes)
+
+Views = 8.51 + .76(dislikes)
+
+The intercept, views, represents the views when there are zero likes and dislikes.
+
+The estimated slope for likes (.69) is the associated change in views depending on the likes. For every 1% increase in likes then there will be an increase of 69% in views.
+
+The estimated slope for dislikes(.76) is the associated change in views depending on dislikes. For every 1% increase in dislikes there will be a 76% increase in views.
+
+### Inference for Regression 
+
+Using the output of the regression tables I want to perform two different null hypothesis. One for each regression analysis. The first null hypothesis being there is no relationship between likes and views on a video.
+
+H0: likes = 0
+
+Ha: likes != 0
+
+There appears to be a positive relationship between likes and views. I believe between .684 or 68.4% and .692 or 69.2% of likes add a view to the video.
+
+-   the 95% confidence interval for the slope is (.684 and .692) a positive relationship
+
+-   the p-value (shown in the table as 0) is very small. Thus, we reject the null favoring that likes do effect views in a YouTube video.
+
+The second null hypothesis is there is no relationship between dislikes and views.
+
+H0: dislikes = 0
+
+Ha: dislikes != 0
+
+There appears to be a positive relationship between dislikes and views. I believe between .753 or 75.3% and .762 or 76.2% of dislikes add a view to the video.
+
+-   the 95% confidence interval for the slope is (.753 and .762) a positive relationship
+
+-   the p-value (shown in the table as 0) is very small. Again, we reject the null favoring the alternative, that dislikes do effect the views to the video.
+
+There seems to be more of an impact with dislikes to views than likes to views. With a confidence interval of .753 and .762 compared to .684 and .692 of likes to views. We can conclude that dislikes effect views more than likes.
+
+## Residual Analysis 
+
+I ran a residual analysis to see if there was any systematic pattern of residuals for the models I ran. If there are any patterns, we cannot fully trust our p-value and confidence intervals.
+
+```{r}
+residual_likes <- get_regression_points(reg_likes)
+residual_dislikes <- get_regression_points(reg_dislikes)
+
+ggplot(residual_likes, 
+       aes(x = log_likes, y = residual)) + 
+  geom_jitter(alpha = .3)+
+  geom_smooth(method = "lm",
+              se = FALSE)+
+  theme_minimal() 
+```
+
+```{r}
+ggplot(residual_dislikes, 
+       aes(x = log_dislikes, y = residual)) + 
+  geom_jitter(alpha = .3)+
+  geom_smooth(method = "lm",
+              se = FALSE)+
+  theme_minimal() 
+```
+
+The residual plots look normally distributed, expect for at the point zero. The model suggests under predicting when log_likes = 0 and log_dislikes = 0. It would be worthwhile to look into the reasons behind this.
+
+## Discussion 
+
+### Conclusion 
+
+In this project I aimed to understand two factors influencing the views of a YouTube video. I picked two numerical variables, likes and dislikes. Finding too much varaince between the minimun and maximum in the variables I then logged all variables to reduce it.
+
+Both numerical variables had a positive correlation when being compared to views. This suggest that both likes and dislikes have a positive relationship to views. In simple terms, Both likes and dislikes increase when views increase and vice versa. Dislikes to views had a smaller correlation than likes to views indicating that dislikes may not have as strong of an impact on a videos popularity as likes do.
+
+In my regression analysis, I observed that dislikes had a buigger impact on views compared to likes. The coefficients from the model suggest that, on average, a dislike has a 76% chance to increase views compared to 69% for likes. This indicates a potentially stronger influence than the impact of likes on views. This insight underscores the significance of dislikes as a factor influencing the viewership of YouTube videos.
+
+### Limitations 
+
+With this project I encountered some limitations. First, my sample was 50,000 videos from 2017-2018 is not all the videos posted between that time. Though enough samples of trending videos, this is not a representation of non-trending videos. Secondly, our analysis focused solely on quantitative variables. Incorporating channel titles to see an effect on views, likes and dislikes is a great next step to this project. For example I took the average views, likes and dislikes for every channel and the results were very surprising. I found that it may be due to the channel itself or the content they post might be a greater influence on views, likes or dislikes. This would be a great next jump for this project.
+
+```{r}
+filtered_US <- US %>%
+  group_by(channel_title) %>%
+  filter(n() >= 100) %>%
+  ungroup()
+
+
+channel <- filtered_US %>%
+  group_by(channel_title) %>%
+  summarize(
+    average_views = mean(views),
+    total_likes = sum(likes),
+    total_dislikes = sum(dislikes)
+  )
+set.seed(33)
+channel_sample <- channel %>% 
+  rep_sample_n(size = 10)
+
+
+
+ggplot(channel_sample, aes(x = channel_title, y = average_views)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Average Views by Channel",
+       x = "Channel Title", y = "Average Views") +
+  coord_flip()+
+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(channel_sample, aes(x = channel_title, y = total_likes)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  labs(title = "Total Likes by Channel",
+       x = "Channel Title", y = "Total Likes") +
+  coord_flip()+
+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
+ggplot(channel_sample, aes(x = channel_title, y = total_dislikes)) +
+  geom_bar(stat = "identity", fill = "lightcoral") +
+  labs(title = "Total Dislikes by Channel",
+       x = "Channel Title", y = "Total Dislikes") +
+  coord_flip() +
+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Further Questions 
+
+There are more avenues for the project to go as well. How frequently the channel posts? Does the specific tags associated with each video effect offer more insights to the views, likes and dislikes relationship. Incorporating data over a bigger time period would also help the data.
+
+It would also be interesting to seem how algorithms changes on YouTube over this time period effected our data, if any, YouTube constantly changes their algorithm giving channels difficulty taking this data in. Understanding how external algorithms effect the overall algorithm would also be another avenue to venture.
+
+My current study lays the groundwork for future inquiries between content creators, viewer engagement, and the YouTube algorithm. By addressing these limitations and posing new questions, we can refine our understanding of the complex ecosystem that shapes video popularity on YouTube.
+
+## 
+
+### 
