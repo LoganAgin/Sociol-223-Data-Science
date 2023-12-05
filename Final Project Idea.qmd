@@ -1,0 +1,21 @@
+---
+title: "Final project idea"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+US <- read_csv("USvideos.csv")
+RU <- read_csv("RUvideos.csv")
+MX <- read_csv("MXvideos.csv")
+KR <- read_csv("KRvideos.csv")
+JP <- read_csv("JPvideos.csv")
+IN <- read_csv("INvideos.csv")
+GB <- read_csv("GBvideos.csv")
+FR <- read_csv("FRvideos.csv")
+DE <- read_csv("DEvideos.csv")
+CA <- read_csv("CAvideos.csv")
+```
+
+I would like to look at what effects views in all countries. I feel the most important stat in a YouTube video is the views because of AD revenue and more views equals more subscriptions. I would like to see how the channel, likes and dislikes effect the videos views (data from 2019 when dislikes were still active). I will do this for multiple countries to see if this is universal or country based.
