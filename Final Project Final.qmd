@@ -202,9 +202,9 @@ Views = 8.51 + .76(dislikes)
 
 The intercept, views, represents the views when there are zero likes and dislikes.
 
-The estimated slope for likes (.69) is the associated change in views depending on the likes. For every 1% increase in likes then there will be an increase of 69% in views.
+The estimated slope for likes (.69) is the associated change in views depending on the likes. For every 1% increase in likes then there will be an increase of .69% in views.
 
-The estimated slope for dislikes(.76) is the associated change in views depending on dislikes. For every 1% increase in dislikes there will be a 76% increase in views.
+The estimated slope for dislikes(.76) is the associated change in views depending on dislikes. For every 1% increase in dislikes there will be a .76% increase in views.
 
 ### Inference for Regression 
 
@@ -226,7 +226,7 @@ H0: dislikes = 0
 
 Ha: dislikes != 0
 
-There appears to be a positive relationship between dislikes and views. I believe between .753 or 75.3% and .762 or 76.2% of dislikes add a view to the video.
+There appears to be a positive relationship between dislikes and views. I believe between .753 or .753% and .762 or .762% of dislikes add a view to the video.
 
 -   the 95% confidence interval for the slope is (.753 and .762) a positive relationship
 
@@ -269,11 +269,11 @@ In this project I aimed to understand two factors influencing the views of a You
 
 Both numerical variables had a positive correlation when being compared to views. This suggest that both likes and dislikes have a positive relationship to views. In simple terms, Both likes and dislikes increase when views increase and vice versa. Dislikes to views had a smaller correlation than likes to views indicating that dislikes may not have as strong of an impact on a videos popularity as likes do.
 
-In my regression analysis, I observed that dislikes had a buigger impact on views compared to likes. The coefficients from the model suggest that, on average, a dislike has a 76% chance to increase views compared to 69% for likes. This indicates a potentially stronger influence than the impact of likes on views. This insight underscores the significance of dislikes as a factor influencing the viewership of YouTube videos.
+In my regression analysis, I observed that dislikes had a buigger impact on views compared to likes. The coefficients from the model suggest that, on average, a dislike has a .76% chance to increase views compared to .69% for likes. This indicates a potentially stronger influence than the impact of likes on views. This insight underscores the significance of dislikes as a factor influencing the viewership of YouTube videos.
 
 ### Limitations 
 
-With this project I encountered some limitations. First, my sample was 50,000 videos from 2017-2018 is not all the videos posted between that time. Though enough samples of trending videos, this is not a representation of non-trending videos. Secondly, our analysis focused solely on quantitative variables. Incorporating channel titles to see an effect on views, likes and dislikes is a great next step to this project. For example I took the average views, likes and dislikes for every channel and the results were very surprising. I found that it may be due to the channel itself or the content they post might be a greater influence on views, likes or dislikes. This would be a great next jump for this project.
+With this project I encountered some limitations. First, my sample was 50,000 videos from 2017-2018 is not all the videos posted between that time. Though enough samples of trending videos, this is not a representation of non-trending videos. Secondly, our analysis focused solely on quantitative variables. Incorporating channel titles to see an effect on views, likes and dislikes is a great next step to this project. For example I took the average views, likes and dislikes for every channel and the results were very surprising. I found that it may be due to the channel itself or the content they post might be a greater influence on views, likes or dislikes. This would be a great next jump for this project. I also found that my scatter plots were under predicting when log_likes = 0 and log_dislikes = 0.
 
 ```{r}
 filtered_US <- US %>%
